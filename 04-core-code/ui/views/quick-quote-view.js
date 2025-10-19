@@ -176,7 +176,8 @@ export class QuickQuoteView {
 
     handleTableCellClick({ rowIndex, column }) {
         this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
-        this.stateService.dispatch(uiActions.clearMultiSelectSelection());
+        // [MODIFIED] Do not clear selection when a data cell is clicked.
+        // this.stateService.dispatch(uiActions.clearMultiSelectSelection());
         
         const item = this._getItems()[rowIndex];
         if (item && (column === 'width' || column === 'height')) {
