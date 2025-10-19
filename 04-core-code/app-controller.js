@@ -1,6 +1,6 @@
 // File: 04-core-code/app-controller.js
 
-import { EVENTS, VIEWS } from '../config/constants.js';
+import { EVENTS, VIEWS } from './config/constants.js';
 
 /**
  * @fileoverview The main controller of the application.
