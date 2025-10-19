@@ -58,9 +58,6 @@ export class AppController {
     }
 
     _subscribeToQuickQuoteViewEvents() {
-        // [MODIFIED] This is the core fix. The event subscriptions are now separated and explicit,
-        // ensuring that a click on a sequence cell ONLY triggers the sequence handler, and a click
-        // on a data cell ONLY triggers the data cell handler. This resolves the incorrect event routing.
         this.eventAggregator.subscribe(EVENTS.TABLE_CELL_CLICKED, (payload) => this.quickQuoteView.handleTableCellClick(payload));
         this.eventAggregator.subscribe(EVENTS.SEQUENCE_CELL_CLICKED, (payload) => this.quickQuoteView.handleSequenceCellClick(payload));
         
