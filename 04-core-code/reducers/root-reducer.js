@@ -42,8 +42,16 @@ function uiReducer(state, action) {
             return { ...state, visibleColumns: action.payload.columns };
         case UI_ACTION_TYPES.SET_ACTIVE_TAB:
             return { ...state, activeTabId: action.payload.tabId };
+        
+        // [MODIFIED] This action now ONLY sets the active cell and input mode.
+        // It no longer affects any selection state, decoupling focus from selection.
         case UI_ACTION_TYPES.SET_ACTIVE_CELL:
-            return { ...state, activeCell: action.payload, inputMode: action.payload.column };
+            return {
+                ...state,
+                activeCell: action.payload,
+                inputMode: action.payload.column,
+            };
+
         case UI_ACTION_TYPES.SET_INPUT_VALUE:
             return { ...state, inputValue: String(action.payload.value || '') };
         case UI_ACTION_TYPES.APPEND_INPUT_VALUE:
@@ -181,24 +189,33 @@ function quoteReducer(state, action, { productFactory, configManager }) {
             return { ...state, products: { ...state.products, [productKey]: productData } };
         }
 
-        case QUOTE_ACTION_TYPES.DELETE_ROW: {
+        case QUOTE_ACTION_TYPES.DELETE_MULTIPLE_ROWS: {
             items = [...productData.items];
-            const { selectedIndex } = action.payload;
-            const itemToDelete = items[selectedIndex];
-            if (!itemToDelete) return state;
+            const { indexesToDelete } = action.payload;
+            
+            // Sort indexes in descending order to avoid shifting issues during deletion
+            const sortedIndexes = [...indexesToDelete].sort((a, b) => b - a);
+            
+            sortedIndexes.forEach(index => {
+                const itemToDelete = items[index];
+                if (!itemToDelete) return; // Should not happen if logic is correct
+                
+                // Determine if this is the last row with content. The last item is always blank.
+                const isLastPopulatedRow = index === items.length - 2 && items.length > 1;
 
-            const isLastPopulatedRow = selectedIndex === items.length - 2 && items.length > 1 && !items[items.length - 1].width && !items[items.length-1].height;
+                if (isLastPopulatedRow || items.length === 1) {
+                    // If it's the only row or the last populated row, just clear it instead of deleting.
+                    const productStrategy = productFactory.getProductStrategy(productKey);
+                    const clearedItem = productStrategy.getInitialItemData();
+                    clearedItem.itemId = itemToDelete.itemId; // Preserve itemId
+                    items[index] = clearedItem;
+                } else {
+                    items.splice(index, 1);
+                }
+            });
 
-            if (isLastPopulatedRow || items.length === 1) {
-                const productStrategy = productFactory.getProductStrategy(productKey);
-                const newItem = productStrategy.getInitialItemData();
-                newItem.itemId = itemToDelete.itemId;
-                items[selectedIndex] = newItem;
-            } else {
-                items.splice(selectedIndex, 1);
-            }
-            items = _consolidateEmptyRows(items, productFactory, productKey);
-            productData = { ...productData, items };
+            const consolidatedItems = _consolidateEmptyRows(items, productFactory, productKey);
+            productData = { ...productData, items: consolidatedItems };
             return { ...state, products: { ...state.products, [productKey]: productData } };
         }
         

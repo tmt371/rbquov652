@@ -117,7 +117,6 @@ export class TableComponent {
     _createCellRenderers() {
         return {
             sequence: (cell, item, index, state) => {
-                // [MODIFIED] Removed obsolete state flags 'selectedRowIndex' and 'isMultiSelectMode'
                 const { multiSelectSelectedIndexes, lfSelectedRowIndexes } = state.ui;
                 const currentProductKey = state.quoteData.currentProduct;
                 const items = state.quoteData.products[currentProductKey].items;
@@ -125,13 +124,13 @@ export class TableComponent {
                 cell.textContent = index + 1;
                 const isLastRowEmpty = (index === items.length - 1) && (!item.width && !item.height);
                 
-                // [MODIFIED] Simplified highlighting logic to rely only on multiSelectSelectedIndexes
+                // [MODIFIED] Highlighting logic is now solely dependent on the multiSelectSelectedIndexes array.
+                // The old `selectedRowIndex` and `isMultiSelectMode` are no longer used for rendering.
                 if (lfSelectedRowIndexes.includes(index)) {
                     cell.classList.add('lf-selection-highlight');
                 } else if (isLastRowEmpty) {
                     cell.classList.add('selection-disabled');
                 } else if (multiSelectSelectedIndexes.includes(index)) {
-                    // Use a single, consistent class for any selection (single or multi)
                     cell.classList.add('selected-row-highlight');
                 }
             },

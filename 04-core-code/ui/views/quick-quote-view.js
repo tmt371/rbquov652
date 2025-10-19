@@ -176,7 +176,9 @@ export class QuickQuoteView {
 
     handleTableCellClick({ rowIndex, column }) {
         this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
-        // [MODIFIED] Do not clear selection when a data cell is clicked.
+
+        // [MODIFIED] Removed the call that incorrectly cleared the selection state.
+        // This is a key part of decoupling focus from selection.
         // this.stateService.dispatch(uiActions.clearMultiSelectSelection());
         
         const item = this._getItems()[rowIndex];

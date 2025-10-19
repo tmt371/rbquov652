@@ -80,7 +80,10 @@ export class FocusService {
         
         column = navigableColumns[columnIndex];
         this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
-        this.stateService.dispatch(uiActions.clearMultiSelectSelection());
+
+        // [MODIFIED] Removed the call that incorrectly cleared the selection state.
+        // This is a key part of decoupling focus from selection.
+        // this.stateService.dispatch(uiActions.clearMultiSelectSelection());
         
         const currentItem = items[rowIndex];
         if (currentItem && (column === 'width' || column === 'height')) {
