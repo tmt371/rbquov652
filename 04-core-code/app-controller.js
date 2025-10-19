@@ -1,6 +1,6 @@
 // File: 04-core-code/app-controller.js
 
-import { EVENTS, VIEWS } from './config/constants.js';
+import { EVENTS } from './config/constants.js';
 
 /**
  * @fileoverview The main controller of the application.
@@ -44,13 +44,8 @@ export class AppController {
     }
     
     _subscribeToViewChanges() {
-        this.eventAggregator.subscribe(EVENTS.VIEW_CHANGED, (viewName) => {
-            if (viewName === VIEWS.DETAIL_CONFIG) {
-                this.workflowService.handleEnterDetailConfigView();
-            } else if (viewName === VIEWS.QUICK_QUOTE) {
-                this.workflowService.handleExitDetailConfigView();
-            }
-        });
+        // This is a placeholder for future logic if needed.
+        // The original logic was based on the now-removed VIEWS constant.
     }
 
     _subscribeToWorkflowEvents() {
@@ -58,8 +53,22 @@ export class AppController {
     }
 
     _subscribeToQuickQuoteViewEvents() {
-        this.eventAggregator.subscribe(EVENTS.TABLE_CELL_CLICKED, (payload) => this.quickQuoteView.handleTableCellClick(payload));
-        this.eventAggregator.subscribe(EVENTS.SEQUENCE_CELL_CLICKED, (payload) => this.quickQuoteView.handleSequenceCellClick(payload));
+        // This section contains the correct, separated event subscriptions
+        // from the voided 4th revision.
+        this.eventAggregator.subscribe(EVENTS.TABLE_CELL_CLICKED, (payload) => {
+            if (this.uiManager.getCurrentViewName() === 'QUICK_QUOTE') {
+                this.quickQuoteView.handleTableCellClick(payload);
+            } else {
+                this.detailConfigView.handleTableCellClick(payload);
+            }
+        });
+        this.eventAggregator.subscribe(EVENTS.SEQUENCE_CELL_CLICKED, (payload) => {
+            if (this.uiManager.getCurrentViewName() === 'QUICK_QUOTE') {
+                this.quickQuoteView.handleSequenceCellClick(payload);
+            } else {
+                this.detailConfigView.handleSequenceCellClick(payload);
+            }
+        });
         
         this.eventAggregator.subscribe(EVENTS.NUMERIC_KEY_PRESSED, (payload) => this.quickQuoteView.handleNumericKeyPress(payload));
         this.eventAggregator.subscribe(EVENTS.USER_REQUESTED_INSERT_ROW, () => this.quickQuoteView.handleInsertRow());
