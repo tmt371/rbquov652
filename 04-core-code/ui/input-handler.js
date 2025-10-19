@@ -188,7 +188,7 @@ export class InputHandler {
                     }, this.pressThreshold);
                 }
             };
-            
+
             const endPress = (e) => {
                 clearTimeout(this.longPressTimer);
 
@@ -200,8 +200,12 @@ export class InputHandler {
                         if (column && rowIndex) {
                             const eventData = { rowIndex: parseInt(rowIndex, 10), column };
                             if (column === 'sequence') {
+                                // [TRACER] Log when a sequence cell click is detected.
+                                console.log('[TRACER] input-handler.js: Detected sequence cell click. Publishing SEQUENCE_CELL_CLICKED with:', eventData);
                                 this.eventAggregator.publish(EVENTS.SEQUENCE_CELL_CLICKED, eventData);
                             } else {
+                                // [TRACER] Log when a regular data cell click is detected.
+                                console.log('[TRACER] input-handler.js: Detected data cell click. Publishing TABLE_CELL_CLICKED with:', eventData);
                                 this.eventAggregator.publish(EVENTS.TABLE_CELL_CLICKED, eventData);
                             }
                         }

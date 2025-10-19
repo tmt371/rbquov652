@@ -43,14 +43,20 @@ function uiReducer(state, action) {
         case UI_ACTION_TYPES.SET_ACTIVE_TAB:
             return { ...state, activeTabId: action.payload.tabId };
         
-        // [MODIFIED] This action now ONLY sets the active cell and input mode.
-        // It no longer affects any selection state, decoupling focus from selection.
-        case UI_ACTION_TYPES.SET_ACTIVE_CELL:
-            return {
+        case UI_ACTION_TYPES.SET_ACTIVE_CELL: {
+            // [TRACER] Log the state before and after this specific action.
+            console.log(`[TRACER] root-reducer.js: Handling SET_ACTIVE_CELL. Payload:`, action.payload);
+            console.log(`[TRACER] root-reducer.js: State BEFORE SET_ACTIVE_CELL:`, { activeCell: state.activeCell, multiSelectSelectedIndexes: state.multiSelectSelectedIndexes });
+            
+            const newState = {
                 ...state,
                 activeCell: action.payload,
                 inputMode: action.payload.column,
             };
+
+            console.log(`[TRACER] root-reducer.js: State AFTER SET_ACTIVE_CELL:`, { activeCell: newState.activeCell, multiSelectSelectedIndexes: newState.multiSelectSelectedIndexes });
+            return newState;
+        }
 
         case UI_ACTION_TYPES.SET_INPUT_VALUE:
             return { ...state, inputValue: String(action.payload.value || '') };
@@ -66,13 +72,20 @@ function uiReducer(state, action) {
             return { ...state, isMultiSelectMode: isEnteringMode, multiSelectSelectedIndexes: newSelectedIndexes, selectedRowIndex: null };
         }
         case UI_ACTION_TYPES.TOGGLE_MULTI_SELECT_SELECTION: {
+            // [TRACER] Log the state before and after this specific action.
+            console.log(`[TRACER] root-reducer.js: Handling TOGGLE_MULTI_SELECT_SELECTION. Payload:`, action.payload);
+            console.log(`[TRACER] root-reducer.js: State BEFORE TOGGLE_MULTI_SELECT_SELECTION:`, { multiSelectSelectedIndexes: state.multiSelectSelectedIndexes });
+
             const selectedIndexes = new Set(state.multiSelectSelectedIndexes);
             if (selectedIndexes.has(action.payload.rowIndex)) {
                 selectedIndexes.delete(action.payload.rowIndex);
             } else {
                 selectedIndexes.add(action.payload.rowIndex);
             }
-            return { ...state, multiSelectSelectedIndexes: Array.from(selectedIndexes) };
+            const newState = { ...state, multiSelectSelectedIndexes: Array.from(selectedIndexes) };
+
+            console.log(`[TRACER] root-reducer.js: State AFTER TOGGLE_MULTI_SELECT_SELECTION:`, { multiSelectSelectedIndexes: newState.multiSelectSelectedIndexes });
+            return newState;
         }
         case UI_ACTION_TYPES.CLEAR_MULTI_SELECT_SELECTION:
             return { ...state, multiSelectSelectedIndexes: [] };

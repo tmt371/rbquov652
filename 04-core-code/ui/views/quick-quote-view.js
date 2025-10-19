@@ -175,6 +175,8 @@ export class QuickQuoteView {
     }
 
     handleTableCellClick({ rowIndex, column }) {
+        // [TRACER] Log when this handler is invoked.
+        console.log(`[TRACER] quick-quote-view.js: handleTableCellClick invoked for row ${rowIndex}, column ${column}.`);
         this.stateService.dispatch(uiActions.setActiveCell(rowIndex, column));
 
         // [MODIFIED] Removed the call that incorrectly cleared the selection state.
@@ -190,6 +192,8 @@ export class QuickQuoteView {
     }
     
     handleSequenceCellClick({ rowIndex }) {
+        // [TRACER] Log when this handler is invoked.
+        console.log(`[TRACER] quick-quote-view.js: handleSequenceCellClick invoked for row ${rowIndex}.`);
         this.stateService.dispatch(uiActions.toggleMultiSelectSelection(rowIndex));
     }
     

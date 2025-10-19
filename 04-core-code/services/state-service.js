@@ -32,6 +32,9 @@ export class StateService {
      * @param {object} action The action object describing the state change.
      */
     dispatch(action) {
+        // [TRACER] Log every action that is dispatched.
+        console.log(`[TRACER] state-service.js: dispatching action ->`, action);
+
         const newState = this.reducer(this._state, action);
         
         // Only update and publish if the state has actually changed.
